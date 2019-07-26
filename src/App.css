@@ -46,3 +46,7 @@ html, body {
   padding: 5px;
   cursor: pointer;
 }
+
+.info {
+  margin-bottom: 15px;
+}

@@ -21,43 +21,83 @@ class App extends React.Component {
     })
   }
 
+
+
+  // const neededMembers = authors.filter(item => item.id === members[item.id - 1])
+
+
   getTeamArticles = teamId => {
     const neededTeam = teams.find(item => item.id === teamId)
     const { members, name } = neededTeam
+    console.log('member - ', members)
+    // const neededMembers = authors.filter(item => item.id === members[item.id - 1]) // [{id: 1, name: "Oliver"}, {id: 2, name: "Jan"} ...]
+    const neededMembers = authors.filter(item => item.id === members.find(id => id === item.id))
 
-    const neededMembers = authors.filter(item => item.id === members[item.id - 1]) // [{id: 1, name: "Oliver"}, {id: 2, name: "Jan"} ...]
-    const neededMembersNames = neededMembers.map(item => item.name) // ["Oliver", "Jan", "Jakub", "Peter"]
-    const neededMembersIds = neededMembers.map(item => item.id) // [1,2,3,4]
+    // console.log('authors[1].id - ', authors[1].)
 
-    let string = ''
-    let teamArticles = []
-    let articlesData = []
-    
-    articles.map((item, index) => {
-      if (articles[index].hasOwnProperty('authors')) {
-        const articlesAuthors = neededMembersIds.filter(id => item.authors.indexOf(id) > -1) // [3], [1,2,3], ...
+    console.log('neededMembers - ', neededMembers)
+    console.log('authors - ', authors)
 
-        articlesData.push(neededMembers.filter(member => articlesAuthors.indexOf(member.id) > -1))
-         // [{id: 3, name: 'Jakub'}, ...]
-        teamArticles.push(item.text)
-        let currentText = teamArticles[index]
+    neededMembers.forEach(user => user.text = '')
 
-        articlesData.flat().map((man) => {
-          man.text = currentText
-        })
+    let articlesLenght
 
-        // string = `${neededMembersNames[articlesData.length - 1]} wrote articles ${item.text}`
-      }
+    members.forEach((member, index) => {
+      // debugger
+      articles.forEach((article) => {
+        // if (article.authors && article.authors.includes(member) && neededMembers[index]) {
+        if (article.authors && article.authors.includes(member)) {
+          articlesLenght = articles.length
+          // neededMembers[index].text += article.text + ', '
+          neededMembers.forEach(id => id.text += article.text + ', ')
+        }
+      })
     })
-    console.log('articlesData - ', articlesData.flat())
+
+    neededMembers.forEach(user => {
+      return user.text.replace(/..$/, "")
+    })
+
+    const insertAnd = (el) => {
+      let restElLength = el.length - 2
+
+      if (el.length > 1) {
+        return `${el[0]}, ${el[1]} and ${el.length > 2 ? restElLength + ' more' : ''}`
+      } else {
+        return el
+      }
+    }
+
+    const output = neededMembers.map((element, index) => {
+      let finalHtml
+      let text = element.text.replace(/..$/, "").split(', ')
+
+      const work = `${element.name} ${element.text ? `wrote articles ${insertAnd(text)}` : 'wrote 0  articles'}`
+      const result = `Team ${name} co-authored ${neededMembers.length} out of ${articlesLenght} articles.`
+
+      if (index === neededMembers.length - 1) {
+        finalHtml = <div key={index}>
+          <p>-----</p>
+          <p className="result">{index === neededMembers.length - 1 ? result : ''}</p>
+        </div>
+
+      } else {
+        finalHtml = <div key={index}>
+          <p className="info">{work}</p>
+        </div>
+      }
+
+      return finalHtml
+    })
+
+    return output
   }
 
   render() {
     const { firstToUpper, test, getTeamArticles } = this
-    getTeamArticles(1)
 
     return (
-      <div className="container">
+      <div className="container" >
         <header className="header">
           <h1 className="header-title">Webscope interview test</h1>
         </header>
@@ -84,10 +124,7 @@ class App extends React.Component {
             <div className="task">
               <h2 className="task-caption">4. Implement function getTeamArticlesDescription(teamId: number) : string {}:</h2>
               <h3 className="task-result">
-
-              </h3>
-              <h3 className="task-result">
-
+                {getTeamArticles(1)}
               </h3>
             </div>
           </div>
@@ -96,19 +133,5 @@ class App extends React.Component {
     )
   }
 }
-
-// function App() {
-//   const text = this.props
-//   console.log(text)
-//   return (
-//     <div className="container">
-//       <header className="header">
-//         <h1>Webscope interview test</h1>
-//         <h2>1. Implement firstToUpper method in Javascript that has a signature string → string</h2>
-//         <div className="">{firstToUpper()}</div>
-//       </header>
-//     </div>
-//   );
-// }
 
 export default App;
